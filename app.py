@@ -68,10 +68,12 @@ def display_database_content():
     if table_names:
         selected_table = st.selectbox("Select a table to view:", table_names)
         with engine.connect() as connection:
-            table_data = pd.read_sql(f"SELECT * FROM {selected_table}", connection)
+            result = connection.execute(f"SELECT * FROM {selected_table}")
+            table_data = pd.DataFrame(result.fetchall(), columns=result.keys())
         st.write("Table content:", table_data)
     else:
         st.write("No tables found in the database.")
+
 
         
         
