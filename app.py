@@ -17,6 +17,7 @@ def sign_out():
     if sign_out_button.button('Sign Out'):
         st.session_state.authenticated = False
         sign_out_button.write("Signed out successfully.")
+        st.experimental_rerun()
 
 def login():
     st.title('Login')
