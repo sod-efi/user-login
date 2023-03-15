@@ -67,6 +67,9 @@ def show_uploaded_files():
     
 # Main application function to render the UI and handle user interactions.
 def main_app():
+    # Show previously uploaded files
+    show_uploaded_files()
+    
     render_spiral_chart(generate_spiral_data(st.slider("Number of points in spiral", 1, 5000, 2000), st.slider("Number of turns in spiral", 1, 100, 9)))
     upload_and_save_file()
     sign_out()
