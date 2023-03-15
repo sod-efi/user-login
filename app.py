@@ -24,13 +24,6 @@ def login():
         else:
             st.error('Invalid username or password')
 
-    if st.button('Login', key='login_button'):  # Add a unique key for the Login button
-        if authenticate(username, password):
-            st.session_state.authenticated = True
-            st.experimental_rerun()
-        else:
-            st.error('Invalid username or password')
-
 def sign_out():
     """Handle user sign out and session state."""
     sign_out_button = st.empty()
@@ -49,7 +42,6 @@ def upload_and_save_file(username):
         engine = create_engine(f'sqlite:///uploaded_files.db')
         file_content.to_sql('uploaded_files', engine, if_exists='append', index=False)
         st.success("File saved to database 'uploaded_files.db' in table 'uploaded_files'.")
-
 
 # Generate spiral data based on the given parameters.
 def generate_spiral_data(total_points, num_turns):
@@ -82,12 +74,11 @@ def show_uploaded_files(username):
     except:
         st.write("No files uploaded yet.")
 
-    
 # Main application function to render the UI and handle user interactions.
 def main_app(current_username):
     # Show previously uploaded files
     show_uploaded_files(current_username)
-    
+
     render_spiral_chart(generate_spiral_data(st.slider("Number of points in spiral", 1, 5000, 2000, key='points_slider'), st.slider("Number of turns in spiral", 1, 100, 9, key='turns_slider')))
     upload_and_save_file(current_username)
     sign_out()
