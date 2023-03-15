@@ -13,8 +13,10 @@ def authenticate(username, password):
     return False
 
 def sign_out():
-    if st.button('Sign Out'):
+    sign_out_button = st.empty()
+    if sign_out_button.button('Sign Out'):
         st.session_state.authenticated = False
+        sign_out_button.write("Signed out successfully.")
 
 def login():
     st.title('Login')
