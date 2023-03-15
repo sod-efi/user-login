@@ -6,6 +6,7 @@ import math
 from sqlalchemy import create_engine
 import os
 import sqlite3
+import uuid
 
 # Set the database file path in the app's working directory
 db_path = os.path.join(os.getcwd(), "uploaded_files.db")
@@ -47,6 +48,8 @@ def sign_out():
         sign_out_button.write("Signed out successfully.")
         st.experimental_rerun()
 
+
+
 def upload_and_save_file(username):
     st.subheader("Upload a File")
     file = st.file_uploader("Choose a file", type=['csv', 'txt', 'xlsx'])
@@ -54,9 +57,20 @@ def upload_and_save_file(username):
         file_content = pd.read_csv(file)
         file_content['username'] = username  # Add the username to the file content
         st.write("File content:", file_content)
-        engine = create_engine(f'sqlite:///uploaded_files.db')
-        file_content.to_sql('uploaded_files', engine, if_exists='append', index=False)
-        st.success("File saved to database 'uploaded_files.db' in table 'uploaded_files'.")
+        
+        # Generate a unique table name for each file
+        table_name = f"file_{uuid.uuid4().hex}"
+        
+        # Connect to the SQLite database
+        conn = sqlite3.connect(db_path)
+        
+        # Save the file content to a new table in the database
+        file_content.to_sql(table_name, conn, if_exists='replace', index=False)
+        conn.commit()
+        conn.close()
+        
+        st.success(f"File saved to database 'uploaded_files.db' in table '{table_name}'.")
+
 
 # Generate spiral data based on the given parameters.
 def generate_spiral_data(total_points, num_turns):
