@@ -96,6 +96,3 @@ if st.session_state.authenticated:
     main_app(st.session_state.current_username)
 else:
     login()
-
-else:
-    login()
