@@ -87,4 +87,3 @@ if __name__ == '__main__':
         main_app(st.session_state.current_username)
     else:
         login()
-``
