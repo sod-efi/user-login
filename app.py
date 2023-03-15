@@ -67,7 +67,7 @@ def display_database_content():
     table_names = inspector.get_table_names()
     if table_names:
         selected_table = st.selectbox("Select a table to view:", table_names)
-        table_data = pd.read_sql(selected_table, engine)
+        table_data = pd.read_sql_table(selected_table, engine)
         st.write("Table content:", table_data)
     else:
         st.write("No tables found in the database.")
