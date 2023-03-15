@@ -5,6 +5,27 @@ import os
 import sqlite3
 import uuid
 
+from sqlalchemy import inspect
+
+def display_database_content():
+    st.subheader("Database Content")
+    engine = create_engine(f'sqlite:///uploaded_files.db')
+    inspector = inspect(engine)
+    table_names = inspector.get_table_names()
+    if table_names:
+        selected_table = st.selectbox("Select a table", table_names)
+        try:
+            table_data = pd.read_sql(selected_table, engine)
+            st.write(table_data)
+        except Exception as e:
+            st.error(f"Error reading data from table: {str(e)}")
+    else:
+        st.write("No tables found in the database.")
+
+
+
+
+
 # Set the database file path in the app's working directory
 db_path = os.path.join(os.getcwd(), "uploaded_files.db")
 
