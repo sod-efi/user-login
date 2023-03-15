@@ -4,6 +4,20 @@ from collections import namedtuple
 import altair as alt
 import math
 from sqlalchemy import create_engine
+import os
+import sqlite3
+
+# Set the database file path in the app's working directory
+db_path = os.path.join(os.getcwd(), "my_database.db")
+
+# Connect to the SQLite database
+conn = sqlite3.connect(db_path)
+
+# Create the necessary tables if they don't already exist (replace own SQL code)
+conn.execute("CREATE TABLE IF NOT EXISTS uploaded_files (id INTEGER PRIMARY KEY, username TEXT, ...)")
+conn.commit()
+
+
 
 # Authenticate the user based on a predefined list of valid users and passwords.
 def authenticate(username, password):
