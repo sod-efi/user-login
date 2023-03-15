@@ -48,8 +48,12 @@ def upload_and_save_file(username):
     file = st.file_uploader("Choose a file", type=['csv', 'txt', 'xlsx'])
     if file:
         file_content = pd.read_csv(file)
-        file_content['username'] = username  # Add the username to the file content
         st.write("File content:", file_content)
+        engine = create_engine(f'sqlite:///uploaded_files.db')
+        table_name = f'uploaded_files_{username}'
+        file_content.to_sql(table_name, engine, if_exists='append', index=False)
+        st.success(f"File saved to database 'uploaded_files.db' in table '{table_name}'.")
+
         
         # Generate a unique table name for each file
         table_name = f"file_{uuid.uuid4().hex}"
@@ -85,16 +89,17 @@ def render_spiral_chart(data):
 # Show previously uploaded files
 def show_uploaded_files(username):
     engine = create_engine(f'sqlite:///uploaded_files.db')
+    table_name = f'uploaded_files_{username}'
     try:
-        uploaded_files = pd.read_sql('uploaded_files', engine)
-        user_files = uploaded_files[uploaded_files['username'] == username]  # Filter files by the current user
-        if not user_files.empty:
+        uploaded_files = pd.read_sql(table_name, engine)
+        if not uploaded_files.empty:
             st.subheader("Previously Uploaded Files")
-            st.write(user_files.drop(columns=['username']))  # Remove the username column before displaying
+            st.write(uploaded_files)
         else:
             st.write("No files uploaded yet.")
     except:
         st.write("No files uploaded yet.")
+
 
 # Main application function to render the UI and handle user interactions.
 def main_app(current_username):
