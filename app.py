@@ -84,15 +84,12 @@ def show_uploaded_files(username):
 
     
 # Main application function to render the UI and handle user interactions.
-def main_app(username):
-    show_uploaded_files(username)
-    render_spiral_chart(generate_spiral_data(st.slider("Number of points in spiral", 1, 5000, 2000), st.slider("Number of turns in spiral", 1, 100, 9)))
-    upload_and_save_file(username)
-    sign_out()
-
+def main_app(current_username):
+    # Show previously uploaded files
+    show_uploaded_files(current_username)
     
-    render_spiral_chart(generate_spiral_data(st.slider("Number of points in spiral", 1, 5000, 2000), st.slider("Number of turns in spiral", 1, 100, 9)))
-    upload_and_save_file()
+    render_spiral_chart(generate_spiral_data(st.slider("Number of points in spiral", 1, 5000, 2000, key='points_slider'), st.slider("Number of turns in spiral", 1, 100, 9, key='turns_slider')))
+    upload_and_save_file(current_username)
     sign_out()
 
 # Initialize session state for authentication
