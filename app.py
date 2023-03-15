@@ -14,13 +14,6 @@ db_path = os.path.join(os.getcwd(), "uploaded_files.db")
 # Connect to the SQLite database
 conn = sqlite3.connect(db_path)
 
-# Create the necessary tables if they don't already exist
-conn.execute("CREATE TABLE IF NOT EXISTS uploaded_files (id INTEGER PRIMARY KEY, username TEXT, ...)")
-conn.commit()
-conn.close()
-
-
-
 # Authenticate the user based on a predefined list of valid users and passwords.
 def authenticate(username, password):
     return username in ['user1', 'user2'] and password in ['password1', 'password2']
