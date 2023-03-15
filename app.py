@@ -7,7 +7,7 @@ import io
 import sqlite3
 from sqlalchemy import create_engine
 
-
+# Function to authenticate the user
 def authenticate(username, password):
     valid_usernames = ['user1', 'user2']
     valid_passwords = ['password1', 'password2']
@@ -16,6 +16,7 @@ def authenticate(username, password):
         return True
     return False
 
+# Function to handle user sign out
 def sign_out():
     sign_out_button = st.empty()
     if sign_out_button.button('Sign Out'):
@@ -23,6 +24,7 @@ def sign_out():
         sign_out_button.write("Signed out successfully.")
         st.experimental_rerun()
 
+# Function to handle user login
 def login():
     st.title('Login')
     username = st.text_input('Username')
@@ -34,9 +36,8 @@ def login():
             st.experimental_rerun()
         else:
             st.error('Invalid username or password')
-            
-            
-            
+
+# Function to handle file upload and save to an SQLite database
 def upload_and_save_file():
     st.subheader("Upload a File")
     file = st.file_uploader("Choose a file", type=['csv', 'txt', 'xlsx'])
@@ -55,7 +56,9 @@ def upload_and_save_file():
         file_content.to_sql(table_name, engine, if_exists='append', index=False)
         st.success(f"File saved to database '{database_name}' in table '{table_name}'.")
 
+# Main application function
 def main_app():
+    # Interactive section for generating a spiral plot
     with st.echo(code_location='below'):
         total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
         num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
@@ -76,18 +79,19 @@ def main_app():
         st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
             .mark_circle(color='#0068c9', opacity=0.5)
             .encode(x='x:Q', y='y:Q'))
+
+        # Call the function to upload and save a file
         upload_and_save_file()
-    
+
+    # Call the function to handle user sign out
     sign_out()
 
+# Initialize session state for authentication
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 
+# Show main app if authenticated, otherwise show login screen
 if st.session_state.authenticated:
     main_app()
 else:
     login()
-    
-    
-
-
