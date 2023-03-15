@@ -99,8 +99,13 @@ def main_app(username):
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 
+# Initialize session state for current_username
+if 'current_username' not in st.session_state:
+    st.session_state.current_username = None
+
 # Show main app if authenticated, otherwise show login screen
 if st.session_state.authenticated:
     main_app(st.session_state.current_username)
 else:
     login()
+
