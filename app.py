@@ -34,6 +34,26 @@ def login():
             st.experimental_rerun()
         else:
             st.error('Invalid username or password')
+            
+            
+            
+def upload_and_save_file():
+    st.subheader("Upload a File")
+    file = st.file_uploader("Choose a file", type=['csv', 'txt', 'xlsx'])
+
+    if file is not None:
+        # Load the file content into a DataFrame
+        file_content = pd.read_csv(file)
+        st.write("File content:")
+        st.write(file_content)
+
+        # Save the file content to an SQL database
+        database_name = 'uploaded_files.db'
+        table_name = 'uploaded_files'
+        engine = create_engine(f'sqlite:///{database_name}')
+
+        file_content.to_sql(table_name, engine, if_exists='append', index=False)
+        st.success(f"File saved to database '{database_name}' in table '{table_name}'.")
 
 def main_app():
     with st.echo(code_location='below'):
@@ -69,21 +89,5 @@ else:
     login()
     
     
-def upload_and_save_file():
-    st.subheader("Upload a File")
-    file = st.file_uploader("Choose a file", type=['csv', 'txt', 'xlsx'])
 
-    if file is not None:
-        # Load the file content into a DataFrame
-        file_content = pd.read_csv(file)
-        st.write("File content:")
-        st.write(file_content)
-
-        # Save the file content to an SQL database
-        database_name = 'uploaded_files.db'
-        table_name = 'uploaded_files'
-        engine = create_engine(f'sqlite:///{database_name}')
-
-        file_content.to_sql(table_name, engine, if_exists='append', index=False)
-        st.success(f"File saved to database '{database_name}' in table '{table_name}'.")
 
