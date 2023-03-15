@@ -53,6 +53,7 @@ def upload_and_save_file(username):
         table_name = f'uploaded_files_{username}'
         file_content.to_sql(table_name, engine, if_exists='append', index=False)
         st.success(f"File saved to database 'uploaded_files.db' in table '{table_name}'.")
+
         
 
 # Generate spiral data based on the given parameters.
