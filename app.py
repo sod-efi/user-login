@@ -54,6 +54,17 @@ def render_spiral_chart(data):
     chart = alt.Chart(pd.DataFrame(data), height=500, width=500).mark_circle(color='#0068c9', opacity=0.5).encode(x='x:Q', y='y:Q')
     st.altair_chart(chart)
 
+# Show previously uploaded files
+def show_uploaded_files():
+    engine = create_engine(f'sqlite:///uploaded_files.db')
+    try:
+        uploaded_files = pd.read_sql('uploaded_files', engine)
+        if not uploaded_files.empty:
+            st.subheader("Previously Uploaded Files")
+            st.write(uploaded_files)
+    except:
+        st.write("No files uploaded yet.")
+    
 # Main application function to render the UI and handle user interactions.
 def main_app():
     render_spiral_chart(generate_spiral_data(st.slider("Number of points in spiral", 1, 5000, 2000), st.slider("Number of turns in spiral", 1, 100, 9)))
