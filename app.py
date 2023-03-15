@@ -16,6 +16,17 @@ def sign_out():
     if st.button('Sign Out'):
         st.session_state.authenticated = False
 
+def login():
+    st.title('Login')
+    username = st.text_input('Username')
+    password = st.text_input('Password', type='password')
+
+    if st.button('Login'):
+        if authenticate(username, password):
+            st.session_state.authenticated = True
+        else:
+            st.error('Invalid username or password')
+
 def main_app():
     with st.echo(code_location='below'):
         total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
@@ -46,13 +57,4 @@ if 'authenticated' not in st.session_state:
 if st.session_state.authenticated:
     main_app()
 else:
-    st.title('Login')
-    username = st.text_input('Username')
-    password = st.text_input('Password', type='password')
-
-    if st.button('Login'):
-        if authenticate(username, password):
-            st.session_state.authenticated = True
-            main_app()
-        else:
-            st.error('Invalid username or password')
+    login()
