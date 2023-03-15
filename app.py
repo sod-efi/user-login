@@ -27,6 +27,7 @@ def login():
     if st.button('Login'):
         if authenticate(username, password):
             st.session_state.authenticated = True
+            st.experimental_rerun()
         else:
             st.error('Invalid username or password')
 
