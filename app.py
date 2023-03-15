@@ -53,21 +53,7 @@ def upload_and_save_file(username):
         table_name = f'uploaded_files_{username}'
         file_content.to_sql(table_name, engine, if_exists='append', index=False)
         st.success(f"File saved to database 'uploaded_files.db' in table '{table_name}'.")
-
         
-        # Generate a unique table name for each file
-        table_name = f"file_{uuid.uuid4().hex}"
-        
-        # Connect to the SQLite database
-        conn = sqlite3.connect(db_path)
-        
-        # Save the file content to a new table in the database
-        file_content.to_sql(table_name, conn, if_exists='replace', index=False)
-        conn.commit()
-        conn.close()
-        
-        st.success(f"File saved to database 'uploaded_files.db' in table '{table_name}'.")
-
 
 # Generate spiral data based on the given parameters.
 def generate_spiral_data(total_points, num_turns):
