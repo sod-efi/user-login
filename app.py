@@ -5,32 +5,8 @@ import os
 import sqlite3
 import uuid
 
-from sqlalchemy import inspect
-
-def display_database_content():
-    st.subheader("Database Content")
-    engine = create_engine(f'sqlite:///uploaded_files.db')
-    inspector = inspect(engine)
-    table_names = inspector.get_table_names()
-    if table_names:
-        selected_table = st.selectbox("Select a table", table_names)
-        try:
-            table_data = pd.read_sql(selected_table, engine)
-            st.write(table_data)
-        except Exception as e:
-            st.error(f"Error reading data from table: {str(e)}")
-    else:
-        st.write("No tables found in the database.")
-
-
-
-
-
 # Set the database file path in the app's working directory
 db_path = os.path.join(os.getcwd(), "uploaded_files.db")
-
-# Connect to the SQLite database
-conn = sqlite3.connect(db_path)
 
 # Authenticate the user based on a predefined list of valid users and passwords.
 def authenticate(username, password):
@@ -62,32 +38,14 @@ def sign_out():
 def upload_and_save_file(username):
     st.subheader("Upload a File")
     file = st.file_uploader("Choose a file", type=['csv', 'txt', 'xlsx'])
+    table_name = f'uploaded_files_{username}'  # Move this line outside the if statement
     if file:
         file_content = pd.read_csv(file)
         st.write("File content:", file_content)
         engine = create_engine(f'sqlite:///uploaded_files.db')
-        table_name = f'uploaded_files_{username}'
         file_content.to_sql(table_name, engine, if_exists='append', index=False)
-    st.success(f"File saved to database 'uploaded_files.db' in table '{table_name}'.")
+        st.success(f"File saved to database 'uploaded_files.db' in table '{table_name}'.")
     
-    # Generate spiral data based on the given parameters.
-def generate_spiral_data(total_points, num_turns):
-    Point, data = namedtuple('Point', 'x y'), []
-    points_per_turn = total_points / num_turns
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x, y = radius * math.cos(angle), radius * math.sin(angle)
-        data.append(Point(x, y))
-    return data
-
-# Render an Altair chart based on the given spiral data.
-def render_spiral_chart(data):
-    chart = alt.Chart(pd.DataFrame(data), height=500, width=500).mark_circle(color='#0068c9', opacity=0.5).encode(x='x:Q', y='y:Q')
-    st.altair_chart(chart)
-        
-
 # Show previously uploaded files
 def show_uploaded_files(username):
     engine = create_engine(f'sqlite:///uploaded_files.db')
@@ -99,17 +57,14 @@ def show_uploaded_files(username):
             st.write(uploaded_files)
         else:
             st.write("No files uploaded yet.")
-
     except Exception as e:
         st.write("No files uploaded yet.")
 
 def display_database_content():
     st.subheader("Database Content")
     engine = create_engine(f'sqlite:///uploaded_files.db')
-
     inspector = inspect(engine)
     table_names = inspector.get_table_names()
-
     if table_names:
         selected_table = st.selectbox("Select a table to view:", table_names)
         table_data = pd.read_sql(selected_table, engine)
@@ -126,10 +81,10 @@ def main_app(current_username):
 
 if __name__ == '__main__':
     if 'authenticated' not in st.session_state:
-                st.session_state.authenticated = False
+        st.session_state.authenticated = False
 
     if st.session_state.authenticated:
         main_app(st.session_state.current_username)
     else:
         login()
-
+``
