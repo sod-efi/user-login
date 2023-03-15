@@ -31,16 +31,17 @@ def sign_out():
         sign_out_button.write("Signed out successfully.")
         st.experimental_rerun()
 
-# Upload a file and save its content to an SQLite database.
-def upload_and_save_file():
+def upload_and_save_file(username):
     st.subheader("Upload a File")
     file = st.file_uploader("Choose a file", type=['csv', 'txt', 'xlsx'])
     if file:
         file_content = pd.read_csv(file)
+        file_content['username'] = username  # Add the username to the file content
         st.write("File content:", file_content)
         engine = create_engine(f'sqlite:///uploaded_files.db')
         file_content.to_sql('uploaded_files', engine, if_exists='append', index=False)
         st.success("File saved to database 'uploaded_files.db' in table 'uploaded_files'.")
+
 
 # Generate spiral data based on the given parameters.
 def generate_spiral_data(total_points, num_turns):
@@ -60,20 +61,27 @@ def render_spiral_chart(data):
     st.altair_chart(chart)
 
 # Show previously uploaded files
-def show_uploaded_files():
+def show_uploaded_files(username):
     engine = create_engine(f'sqlite:///uploaded_files.db')
     try:
         uploaded_files = pd.read_sql('uploaded_files', engine)
-        if not uploaded_files.empty:
+        user_files = uploaded_files[uploaded_files['username'] == username]  # Filter files by the current user
+        if not user_files.empty:
             st.subheader("Previously Uploaded Files")
-            st.write(uploaded_files)
+            st.write(user_files.drop(columns=['username']))  # Remove the username column before displaying
+        else:
+            st.write("No files uploaded yet.")
     except:
         st.write("No files uploaded yet.")
+
     
 # Main application function to render the UI and handle user interactions.
-def main_app():
-    # Show previously uploaded files
-    show_uploaded_files()
+def main_app(username):
+    show_uploaded_files(username)
+    render_spiral_chart(generate_spiral_data(st.slider("Number of points in spiral", 1, 5000, 2000), st.slider("Number of turns in spiral", 1, 100, 9)))
+    upload_and_save_file(username)
+    sign_out()
+
     
     render_spiral_chart(generate_spiral_data(st.slider("Number of points in spiral", 1, 5000, 2000), st.slider("Number of turns in spiral", 1, 100, 9)))
     upload_and_save_file()
@@ -85,6 +93,9 @@ if 'authenticated' not in st.session_state:
 
 # Show main app if authenticated, otherwise show login screen
 if st.session_state.authenticated:
-    main_app()
+    main_app(st.session_state.current_username)
+else:
+    login()
+
 else:
     login()
