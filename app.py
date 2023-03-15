@@ -1,8 +1,5 @@
 import streamlit as st
 import pandas as pd
-from collections import namedtuple
-import altair as alt
-import math
 from sqlalchemy import create_engine
 import os
 import sqlite3
@@ -41,8 +38,6 @@ def sign_out():
         sign_out_button.write("Signed out successfully.")
         st.experimental_rerun()
 
-
-
 def upload_and_save_file(username):
     st.subheader("Upload a File")
     file = st.file_uploader("Choose a file", type=['csv', 'txt', 'xlsx'])
@@ -53,8 +48,6 @@ def upload_and_save_file(username):
         table_name = f'uploaded_files_{username}'
         file_content.to_sql(table_name, engine, if_exists='append', index=False)
         st.success(f"File saved to database 'uploaded_files.db' in table '{table_name}'.")
-
-        
 
 # Generate spiral data based on the given parameters.
 def generate_spiral_data(total_points, num_turns):
@@ -72,7 +65,9 @@ def generate_spiral_data(total_points, num_turns):
 def render_spiral_chart(data):
     chart = alt.Chart(pd.DataFrame(data), height=500, width=500).mark_circle(color='#0068c9', opacity=0.5).encode(x='x:Q', y='y:Q')
     st.altair_chart(chart)
-
+        
+        
+        
 # Show previously uploaded files
 def show_uploaded_files(username):
     engine = create_engine(f'sqlite:///uploaded_files.db')
@@ -84,30 +79,34 @@ def show_uploaded_files(username):
             st.write(uploaded_files)
         else:
             st.write("No files uploaded yet.")
-    except:
+
+    except Exception as e:
         st.write("No files uploaded yet.")
 
+def display_database_content():
+    st.subheader("Database Content")
+    engine = create_engine(f'sqlite:///uploaded_files.db')
 
-# Main application function to render the UI and handle user interactions.
+    table_names = engine.table_names()
+    if table_names:
+        selected_table = st.selectbox("Select a table to view:", table_names)
+        table_data = pd.read_sql(selected_table, engine)
+        st.write("Table content:", table_data)
+    else:
+        st.write("No tables found in the database.")
+
 def main_app(current_username):
-    # Show previously uploaded files
-    show_uploaded_files(current_username)
-
-    render_spiral_chart(generate_spiral_data(st.slider("Number of points in spiral", 1, 5000, 2000, key='points_slider'), st.slider("Number of turns in spiral", 1, 100, 9, key='turns_slider')))
-    upload_and_save_file(current_username)
     sign_out()
+    st.title("Welcome to the Streamlit App")
+    upload_and_save_file(current_username)
+    show_uploaded_files(current_username)
+    display_database_content()
 
-# Initialize session state for authentication
-if 'authenticated' not in st.session_state:
-    st.session_state.authenticated = False
+if __name__ == '__main__':
+    if 'authenticated' not in st.session_state:
+        st.session_state.authenticated = False
 
-# Initialize session state for current_username
-if 'current_username' not in st.session_state:
-    st.session_state.current_username = None
-
-# Show main app if authenticated, otherwise show login screen
-if st.session_state.authenticated:
-    main_app(st.session_state.current_username)
-else:
-    login()
-
+    if st.session_state.authenticated:
+        main_app(st.session_state.current_username)
+    else:
+        login()
