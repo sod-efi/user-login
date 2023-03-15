@@ -19,6 +19,14 @@ def login():
     if st.button('Login', key='login_button'):  # Add a unique key for the Login button
         if authenticate(username, password):
             st.session_state.authenticated = True
+            st.session_state.current_username = username  # Store the current username in the session state
+            st.experimental_rerun()
+        else:
+            st.error('Invalid username or password')
+
+    if st.button('Login', key='login_button'):  # Add a unique key for the Login button
+        if authenticate(username, password):
+            st.session_state.authenticated = True
             st.experimental_rerun()
         else:
             st.error('Invalid username or password')
