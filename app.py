@@ -11,19 +11,24 @@ def authenticate(username, password):
 
 # Handle user login and session state.
 def login():
+    """Handle user login and session state."""
     st.title('Login')
-    username, password = st.text_input('Username'), st.text_input('Password', type='password')
-    if st.button('Login') and authenticate(username, password):
-        st.session_state.authenticated = True
-        st.experimental_rerun()
-    elif st.button('Login'):
-        st.error('Invalid username or password')
+    username = st.text_input('Username')
+    password = st.text_input('Password', type='password')
 
-# Handle user sign out and session state.
+    if st.button('Login', key='login_button'):  # Add a unique key for the Login button
+        if authenticate(username, password):
+            st.session_state.authenticated = True
+            st.experimental_rerun()
+        else:
+            st.error('Invalid username or password')
+
 def sign_out():
-    if st.empty().button('Sign Out'):
+    """Handle user sign out and session state."""
+    sign_out_button = st.empty()
+    if sign_out_button.button('Sign Out', key='sign_out_button'):  # Add a unique key for the Sign Out button
         st.session_state.authenticated = False
-        st.write("Signed out successfully.")
+        sign_out_button.write("Signed out successfully.")
         st.experimental_rerun()
 
 # Upload a file and save its content to an SQLite database.
